@@ -18,46 +18,67 @@ const ResultItem: FC<{ manga: Manga; theme: "LIGHT" | "DARK" }> = ({
 }) => {
   const { id, attributes, relationships } = manga;
 
-  const title = attributes ? attributes.title : null;
-  const status = attributes ? attributes.status : null;
+  // Safely get title and status
+  const title = attributes?.title 
+    ? (attributes.title.en || Object.values(attributes.title)[0]) 
+    : "No Title";
+  const status = attributes?.status || "Unknown";
 
+  // Safely find cover and author
   const cover = relationships.find((item) => item.type === "cover_art");
   const author = relationships.find((item) => item.type === "author");
 
-  const filename = cover ? cover.attributes.fileName : null;
-  const author_name = author ? author.attributes.name : null;
+  const filename = cover?.attributes?.fileName;
+  const author_name = author?.attributes?.name;
 
-  const cover_url = `https://uploads.mangadex.org/covers/${id}/${filename}.256.jpg`;
+  // Build the image URL
+  const cover_url = filename
+    ? `https://uploads.mangadex.org/covers/${id}/${filename}.256.jpg`
+    : null;
 
   return (
     <Link
-      title={title ? title.en : ""}
       href={`/manga/${id}`}
       className={classname(
-        "rounded-md",
-        theme === "LIGHT" ? "hover:bg-d9-white" : "hover:bg-secondary_black",
+        "block w-full mb-1 rounded-md transition-colors",
+        theme === "LIGHT" ? "hover:bg-gray-100" : "hover:bg-gray-800"
       )}
     >
-      <li className="flex flex-row flex-nowrap p-2 m-1">
-        <div className="w-16 h-20 rounded-md overflow-hidden flex-shrink-0">
-          <img src={cover_url} alt="" />
+      <li className="flex flex-row items-center p-2 gap-3">
+        {/* Image Container - Fixed size and object-cover ensures photo always shows */}
+        <div className="w-12 h-16 sm:w-14 sm:h-20 flex-shrink-0 bg-gray-700 rounded overflow-hidden relative border border-gray-600">
+            {cover_url ? (
+                <img
+                    src={cover_url}
+                    alt={title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                />
+            ) : (
+                <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400 text-center">
+                  No Img
+                </div>
+            )}
         </div>
 
-        <div className="flex flex-col flex-nowrap ml-3">
+        {/* Text Info */}
+        <div className="flex flex-col flex-1 min-w-0">
           <span
             className={classname(
-              "break-words w-full overflow-hidden",
-              theme === "LIGHT" ? "text-primary-color" : "text-d9-white",
+              "font-semibold text-sm truncate w-full block leading-tight",
+              theme === "LIGHT" ? "text-gray-900" : "text-white"
             )}
           >
-            {title ? title.en : "Title is unavailable"}
+            {title}
           </span>
-          <span className="text-custom-gray">
-            {author_name ? author_name : "Author is unavailable"}
+          <span className="text-xs text-gray-500 truncate mt-1">
+            {author_name || "Unknown Author"}
           </span>
-          <span className="my-1 px-1 py-0.5 rounded-md bg-custom-gray text-white w-min">
-            {status ? status : "ongoing"}
-          </span>
+          <div className="flex items-center mt-1">
+             <span className="px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider font-bold bg-blue-600 text-white">
+                {status}
+             </span>
+          </div>
         </div>
       </li>
     </Link>
@@ -68,36 +89,41 @@ const SearchResults: FC<SearchResultsProps> = ({
   loading,
   results,
   theme,
-  changeSearchText,
 }) => {
+  if (loading) {
+     return (
+        <div
+        className={classname(
+          "absolute top-full left-0 w-full z-50 rounded-b-lg border-t shadow-xl overflow-hidden",
+           theme === "LIGHT" ? "bg-white border-gray-200" : "bg-gray-900 border-gray-700"
+        )}
+      >
+        <div className="flex items-center justify-center h-16">
+          <Spinner />
+        </div>
+      </div>
+     )
+  }
+
+  // If no results, don't show anything
+  if (!results || results.length === 0) return null;
+
   return (
     <div
       className={classname(
-        "absolute top-full left-0 flex flex-row rounded-lg overflow-x-hidden overflow-y-auto z-50 shadow-lg",
+        "absolute top-full left-0 flex flex-col w-full z-50 rounded-b-lg shadow-2xl overflow-hidden border-t",
+         theme === "LIGHT" ? "bg-white border-gray-200" : "bg-gray-900 border-gray-700"
       )}
       style={{
-        width: "min(100%, 800px)",
-        backgroundColor: "var(--primary-bg-color)",
-        transition: "height 0.2s ease-in-out",
-        maxHeight: "calc(100vh - 200px)",
+        maxHeight: "60vh",
+        overflowY: "auto"
       }}
     >
-      {loading ? (
-        <div
-          className={classname(
-            "w-full flex flex-row flex-nowrap items-center justify-center p-2 h-20 flex-shrink-0",
-            theme === "LIGHT" ? "fill-primary-color" : "fill-d9-white",
-          )}
-        >
-          <Spinner />
-        </div>
-      ) : (
-        <ul className="flex flex-col flex-nowrap p-2 lg:p-5">
-          {results.map((result: any, index: number) => (
-            <ResultItem key={index} manga={result} theme={theme} />
+        <ul className="flex flex-col p-2">
+          {results.map((result: any) => (
+            <ResultItem key={result.id} manga={result} theme={theme} />
           ))}
         </ul>
-      )}
     </div>
   );
 };
