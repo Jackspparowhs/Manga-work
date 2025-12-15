@@ -6,19 +6,20 @@ type ModeContextType = {
   toggleTheme: () => void,
 }
 
-const ModeContext: Context<ModeContextType> = createContext<ModeContextType>({ theme: "LIGHT", toggleTheme: () => {}})
+// Fixed: Default context is now DARK
+const ModeContext: Context<ModeContextType> = createContext<ModeContextType>({ theme: "DARK", toggleTheme: () => {}})
 
 // get MODE from localStorage
 const getModeFromStorage = (): MODE => {
+  // Check if we are in the browser
+  if (typeof window === 'undefined') return "DARK"; 
 
   if (localStorage.getItem("MODE") !== null) {
     return localStorage.getItem("MODE") as MODE
   } else {
-
-    // if key "MODE" doesn't exists
-    localStorage.setItem("MODE", "LIGHT")
-
-    return "LIGHT"
+    // Fixed: If no setting exists, Default to DARK
+    localStorage.setItem("MODE", "DARK")
+    return "DARK"
   }
 }
 
@@ -34,37 +35,41 @@ export { ModeContext }
 
 export const useThemeMode = (): [ MODE, () => void ] => {
 
-  const [themeMode, changeThemeMode] = useState<MODE>("LIGHT")
+  // Fixed: Initial state is DARK to prevent "White Flash" on load
+  const [themeMode, changeThemeMode] = useState<MODE>("DARK")
 
   const changeMode = () => {
     // store the value in localstorage
-    setModeInStorage(themeMode !== "LIGHT" ? "LIGHT" : "DARK")
-
-    if(themeMode === "LIGHT") changeThemeMode("DARK")
-    else changeThemeMode("LIGHT")
+    const newMode = themeMode === "LIGHT" ? "DARK" : "LIGHT"
+    setModeInStorage(newMode)
+    changeThemeMode(newMode)
   }
 
   useEffect(() => {
+    // Sync with local storage on mount
     changeThemeMode(getModeFromStorage())
   }, [])
 
   // change the class of the root
   useEffect(() => {
+    const root = document.querySelector(":root")
+    if (!root) return
 
     if (themeMode === "LIGHT") {
       // remove the dark class from the root
-      document.querySelector(":root")?.classList.remove("dark")
-
+      root.classList.remove("dark")
       // add the light class
-      document.querySelector(":root")?.classList.add("light")
+      root.classList.add("light")
+      // Set actual body background color for smooth transition
+      document.body.style.backgroundColor = "white"
     }
     else {
-      
       // remove the light class from the root
-      document.querySelector(":root")?.classList.remove("light")
-
+      root.classList.remove("light")
       // add the dark class
-      document.querySelector(":root")?.classList.add("dark")
+      root.classList.add("dark")
+      // Set actual body background color for smooth transition
+      document.body.style.backgroundColor = "#1a1a1a" // Matches the header color
     }
 
   }, [themeMode])
