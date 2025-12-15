@@ -10,56 +10,65 @@ body {
   margin: 0;
   height: 100%;
   width: 100%;
-  /* RESTORED: This is the new professional font */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  background-color: #121212; /* Default dark background */
 }
 
 /* Hide Scrollbar */
 *::-webkit-scrollbar {
   width: 0px;
   height: 0px;
-  background-color: transparent;
-}
-.scrollbar-none {
-  scrollbar-width: none;
 }
 
-/* --- THEME COLORS --- */
+/* --- THEME SETUP --- */
 .light {
   --primary-bg-color: #ffffff;
   --secondary-bg-color: #ece7e7;
   --primary-text-color: #000000;
   --secondary-text-color: #374151;
-  --gray-text-color: #697e84;
   --active-navigation-bg-color: #d9d9d9;
   --skeleton-bg-color: #d9d9d9;
-  --filter-popup-bg-color: #d9d9d9;
-  
   background-color: var(--primary-bg-color);
   color: var(--primary-text-color);
 }
 
 .dark {
-  /* FIXED: Darker Background */
   --primary-bg-color: #121212;
   --secondary-bg-color: #1e1e1e;
-  --tertiary-bg-color: #2d2d2d;
   --primary-text-color: #ffffff;
-  --gray-text-color: #9ca3af;
+  --secondary-text-color: #9ca3af;
   --active-navigation-bg-color: #2d2d2d;
   --skeleton-bg-color: #374151;
-  --filter-popup-bg-color: #1e1e1e;
-
   background-color: var(--primary-bg-color);
   color: var(--primary-text-color);
 }
 
-.logo { fill: var(--primary-text-color) !important; }
 a { color: inherit; text-decoration: none; }
-* { box-sizing: border-box; transition: background-color 0.2s ease-in-out; }
+* { box-sizing: border-box; }
 
-/* --- CRITICAL LAYOUT RESTORATION (This fixes the giant images) --- */
+/* --- FORCE BOTTOM BAR TO BE FIXED & WHITE --- */
+@media screen and (max-width: 768px) {
+  .nav_wrapper {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    z-index: 9999 !important; /* Forces it to stay on top */
+    background-color: #121212 !important;
+    border-top: 1px solid #333;
+    padding-bottom: env(safe-area-inset-bottom); /* Fix for iPhone bar */
+    color: white !important; /* Force text white */
+  }
+
+  /* Force Icons to be White */
+  .nav_wrapper svg, 
+  .nav_wrapper path {
+    fill: white !important;
+  }
+}
+
+/* --- CRITICAL LAYOUT FIXES (Stops images from being giant) --- */
 
 .slider_card {
   flex-shrink: 0;
@@ -97,14 +106,10 @@ a { color: inherit; text-decoration: none; }
   height: 100vh;
   max-height: 100vh;
   overflow-y: auto;
+  padding-bottom: 80px; /* Adds space so content isn't hidden behind bottom bar */
 }
 
-.chapters_wrapper {
-  width: 100%;
-  height: calc(100vh - 10px);
-}
-
-/* --- MOBILE RESPONSIVENESS --- */
+/* --- MOBILE SIZES --- */
 
 @media screen and (max-width: 750px) {
   .recent_item {
@@ -114,7 +119,7 @@ a { color: inherit; text-decoration: none; }
 
   .slider_card {
     width: calc(100vw - 30px);
-    height: 250px;
+    height: 250px; /* Keeps banner normal size */
   }
   
   .favourite_item {
@@ -123,7 +128,7 @@ a { color: inherit; text-decoration: none; }
   }
 
   .manga__container {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr); /* 3 columns on mobile */
     grid-gap: 4px;
     padding: 4px;
   }
