@@ -10,37 +10,39 @@ body {
   margin: 0;
   height: 100%;
   width: 100%;
-  /* This sets the professional font "Inter" for the whole site */
+  /* RESTORED: This is the new professional font */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased; /* Makes font look sharper */
-  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Hide Scrollbar but keep functionality */
-html::-webkit-scrollbar {
-  display: none;
+/* Hide Scrollbar */
+*::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background-color: transparent;
 }
-html {
-  -ms-overflow-style: none;
+.scrollbar-none {
   scrollbar-width: none;
 }
 
+/* --- THEME COLORS --- */
 .light {
   --primary-bg-color: #ffffff;
-  --secondary-bg-color: #f3f4f6;
+  --secondary-bg-color: #ece7e7;
   --primary-text-color: #000000;
   --secondary-text-color: #374151;
-  --gray-text-color: #6b7280;
-  --active-navigation-bg-color: #e5e7eb;
-  --skeleton-bg-color: #d1d5db;
-  --filter-popup-bg-color: #ffffff;
-
+  --gray-text-color: #697e84;
+  --active-navigation-bg-color: #d9d9d9;
+  --skeleton-bg-color: #d9d9d9;
+  --filter-popup-bg-color: #d9d9d9;
+  
   background-color: var(--primary-bg-color);
   color: var(--primary-text-color);
 }
 
 .dark {
-  --primary-bg-color: #121212; /* Fixed to nice dark gray */
+  /* FIXED: Darker Background */
+  --primary-bg-color: #121212;
   --secondary-bg-color: #1e1e1e;
   --tertiary-bg-color: #2d2d2d;
   --primary-text-color: #ffffff;
@@ -53,29 +55,83 @@ html {
   color: var(--primary-text-color);
 }
 
-/* Ensure icons match text color */
-.logo {
-  fill: var(--primary-text-color) !important;
+.logo { fill: var(--primary-text-color) !important; }
+a { color: inherit; text-decoration: none; }
+* { box-sizing: border-box; transition: background-color 0.2s ease-in-out; }
+
+/* --- CRITICAL LAYOUT RESTORATION (This fixes the giant images) --- */
+
+.slider_card {
+  flex-shrink: 0;
+  width: 500px;
+  height: 300px;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+.manga-card {
+  width: 100%;
 }
 
-* {
-  box-sizing: border-box;
-  /* Removed 'monospace' so normal text looks good */
-  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+.manga-element {
+  max-height: 400px;
 }
 
-/* ... Keep your other utility classes below if needed, but the Font is now fixed ... */
+.recent_item {
+  width: 450px;
+  height: 200px;
+}
 
-/* Mobile Layout Fixes */
+.favourite_item {
+  width: 200px;
+  height: 280px;
+}
+
+.manga__container {
+  width: 100%;
+  display: grid;
+  grid-template-rows: repeat(1fr);
+  grid-template-columns: repeat(6, 1fr);
+  grid-gap: 8px;
+}
+
+.main_wrapper {
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+.chapters_wrapper {
+  width: 100%;
+  height: calc(100vh - 10px);
+}
+
+/* --- MOBILE RESPONSIVENESS --- */
+
 @media screen and (max-width: 750px) {
+  .recent_item {
+    width: 100%;
+    height: 150px;
+  }
+
+  .slider_card {
+    width: calc(100vw - 30px);
+    height: 250px;
+  }
+  
+  .favourite_item {
+    width: 118px !important;
+    height: 220px !important;
+  }
+
+  .manga__container {
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 4px;
+    padding: 4px;
+  }
+}
+
+@media screen and (max-width: 600px) {
   .manga__container {
     grid-template-columns: repeat(3, 1fr);
-    grid-gap: 8px;
-    padding: 8px;
+    grid-gap: 4px;
   }
 }
