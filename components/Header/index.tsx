@@ -10,36 +10,30 @@ const Header = ({
   toggleTheme: () => void;
 }) => {
   return (
-    // FIXED:
-    // 1. Added 'sticky top-0 z-40' so the navbar stays visible when scrolling (Like Just Anime)
-    // 2. Added 'px-4' so the button never touches the edge of the iPhone screen
-    // 3. Added 'backdrop-blur' for a modern glass effect
     <header 
       className={`
         w-full sticky top-0 z-40 
-        flex flex-row flex-nowrap justify-between items-center 
-        px-4 py-2 md:px-6 md:py-3
-        transition-colors duration-300 border-b
-        backdrop-blur-md
+        h-14  /* FIXED HEIGHT: Prevents it from getting too big */
+        flex flex-row items-center justify-between 
+        px-4  /* Padding on sides so button doesn't touch edge */
+        border-b backdrop-blur-md transition-colors duration-300
         ${mode === 'LIGHT' 
-          ? 'bg-white/90 border-gray-200' 
-          : 'bg-[#1a1a1a]/95 border-gray-800' // Darker, cleaner background
+          ? 'bg-white/95 border-gray-200' 
+          : 'bg-[#121212]/95 border-gray-800' 
         }
       `}
     >
-      {/* Container for Logo - prevents it from growing too wide */}
-      <div className="flex-shrink-0 max-w-[70%] overflow-hidden">
+      {/* Restrict Logo Height */}
+      <div className="flex-shrink-0 h-8 flex items-center overflow-hidden">
         <Logo />
       </div>
 
-      {/* Theme Toggle Button */}
+      {/* Theme Button */}
       <button 
         type="button" 
-        role="button" 
-        aria-label="Toggle Theme"
         onClick={toggleTheme}
         className={`
-          p-2 rounded-full transition-transform active:scale-95
+          p-2 rounded-full flex items-center justify-center
           ${mode === 'LIGHT' ? 'hover:bg-gray-100' : 'hover:bg-gray-800'}
         `}
       >
