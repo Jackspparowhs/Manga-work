@@ -6,24 +6,33 @@ const useGetSearchResults = (searchText: string): [boolean, Manga[]] => {
   const [results, changeResults] = useState<Manga[]>([])
 
   useEffect(() => {
-    changeLoading(true)
+    // If the search text is empty, clear results and don't search
+    if (!searchText || searchText.trim() === '') {
+      changeResults([])
+      return
+    }
 
-    Manga.searchMangas(searchText)
-      .then(res => {
-        if (res.result === "ok") {
-          const { data } = res
+    // Set a delay (debounce) of 500ms
+    const delayDebounceFn = setTimeout(() => {
+      changeLoading(true)
 
-          if (data) changeResults(data)
-        }
+      Manga.searchMangas(searchText)
+        .then(res => {
+          if (res.result === "ok") {
+            const { data } = res
+            if (data) changeResults(data)
+          }
+          changeLoading(false)
+        })
+        .catch(error => {
+          changeLoading(false)
+          console.error(error)
+        })
+    }, 500) // Wait 500ms after user stops typing
 
-        changeLoading(false)
-      })
-      .catch(error => {
-        // change the loading status
-        changeLoading(false)
-
-        console.error(error)
-      })
+    // Cleanup function: If user types again before 500ms, cancel the previous timer
+    return () => clearTimeout(delayDebounceFn)
+    
   }, [searchText])
 
   return [loading, results]
