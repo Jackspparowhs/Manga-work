@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "Manga Fam",
+  "name": "Manga by PirateRuler.com",
   "description": "A Manga reading app",
   "background_color": "#fff",
   "start_url": "/",
